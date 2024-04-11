@@ -1,16 +1,19 @@
-# timetabl_app
+# Fahrplanauskunfts-App
 
-A new Flutter project.
+Es soll ein Teil einer Fahrplanauskunfts-App erstellt werden, der dem Benutzer erlaubt, nach einem
+Startpunkt zu suchen und sich mögliche Treffer anzeigen zu lassen.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+* We divided the App in small pieces where main lib contain only UI + state
+ which we used riverpod to manage the State of the Application
+* In the packages,we have 2 packages `search_repository`,`app_theme`
+    * the `search_repository` package responsible to make the http request to provide the need it information and also we create our model and parser there.
+    * the `app_theme` contain the theme of the application and some common part of the UI such as Button Styles
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Preview
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img src="https://github.com/liodali/Fahrplanauskunfts-App-/blob/main/ios_preview.gif?raw=true" alt="#Fahrplanauskunfts-App iOS"><br>
+
+
