@@ -4,10 +4,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 void useInitState(Function onInit) {
   return use(_InitStateHook(onInit: onInit));
 }
-
-/*
-
-*/
 class _InitStateHook extends Hook<void> {
   final Function onInit;
 
