@@ -14,7 +14,7 @@ class SearchWidget extends HookConsumerWidget {
   Widget build(BuildContext context, ref) {
     final textEditingController = useTextEditingController();
     final memSearch = useValueNotifier(
-      textEditingController.text,
+      "",
       [textEditingController.text],
     );
     final formKey = useMemoized(GlobalKey<FormState>.new);
@@ -74,10 +74,10 @@ class SearchWidget extends HookConsumerWidget {
     SearchNotifier searchVM,
     ValueNotifier<String> memSearch,
     TextEditingController textEditingController,
-  ) {
+  ) async {
     if (memSearch.value.isEmpty ||
         memSearch.value != textEditingController.text) {
-      searchVM.searchStartPoint(textEditingController.text);
+      await searchVM.searchStartPoint(textEditingController.text);
       memSearch.value = textEditingController.text;
     }
   }
@@ -150,6 +150,7 @@ class SearchActionWidget extends ConsumerWidget {
         .select((searchState) => searchState is LoadingState ? true : false));
 
     final isPortrait = MediaQuery.orientationOf(context).isPortrait;
+
     return DynamicOrientationRowColumn(
       whenUsage: (
         (orientation: Orientation.landscape, rowColumn: RowColumn.column),
