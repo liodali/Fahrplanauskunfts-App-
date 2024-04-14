@@ -24,4 +24,5 @@ we have also firebase configuration those are credentials will not be shared her
 
 <img src="https://github.com/liodali/Fahrplanauskunfts-App-/blob/main/ios_preview.gif?raw=true" alt="#Fahrplanauskunfts-App iOS"><br>
 
+<img src="https://github.com/liodali/Fahrplanauskunfts-App-/blob/main/android_preview.gif?raw=true"  alt="#Fahrplanauskunfts-App Android"/>
 
