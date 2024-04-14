@@ -150,6 +150,22 @@ void main() {
     expect(find.byType(ListView), findsNothing);
     expect(find.byType(ElevatedButton), findsNWidgets(2));
   });
+  testWidgets("test app switch dark mode", (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          repositoryProvider.overrideWithValue(searchRepo),
+        ],
+        child: const MyApp(),
+      ),
+    );
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.dark_mode));
+    await tester.pump();
+    final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(materialApp.themeMode, ThemeMode.dark);
+    await tester.pumpAndSettle(const Duration(seconds: 4));
+  });
   testWidgets("test app with error text field", (tester) async {
     await tester.pumpWidget(
       ProviderScope(
@@ -239,4 +255,5 @@ void main() {
     expect(find.byIcon(Icons.star), findsOne);
     expect(find.byIcon(Icons.star_border), findsOne);
   });
+  
 }
