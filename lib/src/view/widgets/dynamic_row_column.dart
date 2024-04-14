@@ -40,7 +40,7 @@ class DynamicOrientationRowColumn extends StatelessWidget {
     return OrientationBuilder(builder: (context, orientation) {
       final usage1 = whenUsage.$1;
       final usage2 = whenUsage.$2;
-      if (usage1.orientation == orientation) {
+       if (usage1.orientation == orientation) {
         return switch (usage1.rowColumn) {
           RowColumn.row => Row(
               mainAxisSize: rowColumnConfiguration.mainRowAxisSize,
