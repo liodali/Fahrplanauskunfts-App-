@@ -29,3 +29,8 @@ extension UIWidget on Widget {
         child: this,
       );
 }
+
+extension OrientationExt on Orientation {
+  bool get isPortrait => this == Orientation.portrait;
+  bool get isLandscape => this == Orientation.landscape;
+}

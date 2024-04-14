@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:timetabl_app/src/commons/commons.dart';
 import 'package:timetabl_app/src/model/search_state.dart';
+import 'package:timetabl_app/src/view/widgets/dynamic_row_column.dart';
 import 'package:timetabl_app/src/viewmodel/search_vm.dart';
 
 class SearchWidget extends HookConsumerWidget {
@@ -18,13 +19,22 @@ class SearchWidget extends HookConsumerWidget {
     );
     final formKey = useMemoized(GlobalKey<FormState>.new);
     final isValid = useState(false);
+    final isPortrait = MediaQuery.orientationOf(context).isPortrait;
     return Form(
       key: formKey,
       onChanged: () {
         isValid.value = (formKey.currentState?.validate() ?? false) &&
             textEditingController.text.isNotEmpty;
       },
-      child: Column(
+      child: DynamicOrientationRowColumn(
+        whenUsage: (
+          (orientation: Orientation.landscape, rowColumn: RowColumn.row),
+          (orientation: Orientation.portrait, rowColumn: RowColumn.column)
+        ),
+        rowColumnConfiguration: const RowColumnConfiguration(
+          mainRowAxisSize: MainAxisSize.min,
+          crossRowAxisAlignment: CrossAxisAlignment.start,
+        ),
         children: [
           SearchTextField(
             textFieldController: textEditingController,
@@ -38,7 +48,10 @@ class SearchWidget extends HookConsumerWidget {
             },
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 8),
+            padding: EdgeInsets.only(
+              top: isPortrait ? 8 : 0,
+              left: isPortrait ? 0 : 12,
+            ),
             child: SearchActionWidget(
               isValid: isValid,
               onClear: () => textEditingController.clear(),
@@ -70,7 +83,7 @@ class SearchWidget extends HookConsumerWidget {
   }
 }
 
-class SearchTextField extends StatelessWidget {
+class SearchTextField extends HookWidget {
   final TextEditingController textFieldController;
   final String label;
   final Function onActionSubmit;
@@ -83,7 +96,10 @@ class SearchTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    final key = useMemoized(UniqueKey.new);
+    final isPortrait = MediaQuery.orientationOf(context).isPortrait;
+    final widgetSeachField = TextFormField(
+      key: key,
       controller: textFieldController,
       textInputAction: TextInputAction.search,
       onFieldSubmitted: (_) => onActionSubmit(),
@@ -99,12 +115,20 @@ class SearchTextField extends StatelessWidget {
       decoration: InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
         border: const OutlineInputBorder(),
+        suffixIcon: isPortrait
+            ? null
+            : ClearTextField(
+                onClear: () {
+                  textFieldController.clear();
+                },
+              ),
         labelText: label,
         floatingLabelStyle: const TextStyle(
           fontSize: 18,
         ),
       ),
     );
+    return isPortrait ? widgetSeachField : Expanded(child: widgetSeachField);
   }
 }
 
@@ -124,35 +148,62 @@ class SearchActionWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isLoading = ref.watch(searchProvider
         .select((searchState) => searchState is LoadingState ? true : false));
-    final hasData = ref.watch(searchProvider.select((searchState) =>
-        searchState is SearchState && searchState.location.isNotEmpty
-            ? true
-            : false));
 
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.end,
+    final isPortrait = MediaQuery.orientationOf(context).isPortrait;
+    return DynamicOrientationRowColumn(
+      whenUsage: (
+        (orientation: Orientation.landscape, rowColumn: RowColumn.column),
+        (orientation: Orientation.portrait, rowColumn: RowColumn.row)
+      ),
+      rowColumnConfiguration: const RowColumnConfiguration(
+        mainRowAxisSize: MainAxisSize.max,
+        mainRowAxisAlignment: MainAxisAlignment.end,
+      ),
       children: [
-        ElevatedButton(
-          onPressed: hasData && !isLoading
-              ? () {
-                  onClear();
-                  ref.read(searchProvider.notifier).reset();
-                }
-              : null,
-          style: AppButtonStyle.flat.configuration.style,
-          child: const Text("Clear"),
-        ).padding(
-          const EdgeInsets.only(
-            right: 6,
-          ),
-        ),
+        if (isPortrait) ...[
+          ClearTextField(
+            onClear: onClear,
+          )
+        ],
         ElevatedButton(
           onPressed: isValid.value && !isLoading ? () => onSubmit() : null,
           style: AppButtonStyle.elevated.configuration.style,
           child: const Text("Search"),
         ),
       ],
+    );
+  }
+}
+
+class ClearTextField extends ConsumerWidget {
+  final Function onClear;
+  const ClearTextField({
+    super.key,
+    required this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasData = ref.watch(searchProvider.select((searchState) =>
+        searchState is SearchState && searchState.location.isNotEmpty
+            ? true
+            : false));
+    final isLoading = ref.watch(searchProvider
+        .select((searchState) => searchState is LoadingState ? true : false));
+
+    return ElevatedButton(
+      onPressed: hasData && !isLoading
+          ? () {
+              onClear();
+              ref.read(searchProvider.notifier).reset();
+            }
+          : null,
+      style: AppButtonStyle.flat.configuration.style,
+      child: const Text("Clear"),
+    ).padding(
+      const EdgeInsets.only(
+        right: 6,
+      ),
     );
   }
 }
