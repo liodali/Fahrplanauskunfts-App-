@@ -162,15 +162,22 @@ class SearchActionWidget extends ConsumerWidget {
       ),
       children: [
         if (isPortrait) ...[
-          ClearTextField(
-            onClear: onClear,
+          Flexible(
+            flex: 1,
+            fit: FlexFit.loose,
+            child: ClearTextField(
+              onClear: onClear,
+            ),
           )
         ],
-        ElevatedButton(
-          onPressed: isValid.value && !isLoading ? () => onSubmit() : null,
-          style: AppButtonStyle.elevated.configuration.style,
-          child: const Text("Search"),
-        ),
+        Flexible(
+            flex: 1,
+            fit: FlexFit.loose,
+            child: ElevatedButton(
+              onPressed: isValid.value && !isLoading ? () => onSubmit() : null,
+              style: AppButtonStyle.elevated.configuration.style,
+              child: const Text("Search"),
+            )),
       ],
     );
   }
